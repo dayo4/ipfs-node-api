@@ -1,0 +1,22 @@
+{
+  "name": "fulaso",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config server.js",
+    "start": "pm2 start -r dotenv/config server.js",
+    "restart": "pm2 restart -r dotenv/config server.js",
+    "stop": "pm2 stop server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "ipfs-http-client": "^60.0.0",
+    "it-to-buffer": "^3.0.0"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5"
+  },
+  "type": "module"
+}
