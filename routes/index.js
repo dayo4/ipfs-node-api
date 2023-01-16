@@ -1,27 +1,36 @@
-import { app, ipfs, toBuffer } from '../plugins/index.js'
+import { app, ipfs, toBuffer } from '../add-ons/index.js'
 
 app.get('/', async (req, res) => {
-    res.send('WELCOME TO FULASO - NODE')
+    res.send('WELCOME TO FULAZO - NODE')
 })
 
 app.get('/uploadFiles', async (req, res) => {
-    // const { id, file, filename } = req.body
+    // const { file, filename } = req.body
 
     try {
-        /* EXAMPLE */
-        let data = JSON.stringify({
-            id: '1',
-            file: 'uploaded file',
-            filename: 'filename'
-        })
-        const result = await ipfs.add(data/* Example */)
+        /* EXAMPLE data from request */
+        let sampleData = {
+            file: 'this is the uploaded file',
+            filename: 'randomfile.txt'
+        }
 
-        console.log(result.cid.toString())
+        async function addFile(data) {
+
+            return await ipfs.add({
+                path: data.filename,
+                content: data.file
+            })
+
+        }
+
+        const result = await addFile(req.body || sampleData)
+
+        console.log(result)
 
         res.send(result.cid.toString())
     }
     catch (error) {
-        res.send('Error!')
+        res.send(error)
     }
 
 })
@@ -31,21 +40,20 @@ app.get('/getFiles/:cid', async (req, res) => {
 
     try {
         /* EXAMPLE */
-        const content = await ipfs.cat(cid || 'QmW7fEEhHZgC5nLSsiZNuSJJd2oj2DneoPrvcyQM1YZD1e')
+        const content = await ipfs.cat(cid)
 
-        const decoder = new TextDecoder()
+        let result = Buffer.alloc(0)
 
-        let result = ''
         for await (const chunk of content) {
-            result += decoder.decode(chunk, { stream: true })
+            result = Buffer.concat([result, Buffer.from(chunk)])
         }
 
-        console.log(JSON.parse(result))
+        console.log(result.toString())
 
-        res.send(JSON.parse(result))
+        res.send(result.toString())
     }
     catch (error) {
-        res.send('Error!')
+        res.send(error)
     }
 })
 
