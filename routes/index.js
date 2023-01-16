@@ -1,4 +1,4 @@
-import { app, ipfs, toBuffer } from '../add-ons/index.js'
+import { app, ipfs } from '../add-ons/index.js'
 
 app.get('/', async (req, res) => {
     res.send('WELCOME TO FULAZO - NODE')

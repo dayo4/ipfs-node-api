@@ -8,11 +8,9 @@ app.use(cors())
 import ipfs from './ipfs.js'
 
 // Add other plugins
-import toBuffer from 'it-to-buffer'
 
 
 export {
     app,
     ipfs,
-    toBuffer
 }
