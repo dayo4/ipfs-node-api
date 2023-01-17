@@ -4,7 +4,7 @@ app.get('/', async (req, res) => {
     res.send('WELCOME TO FULAZO - NODE')
 })
 
-app.get('/uploadFiles', async (req, res) => {
+app.post('/uploadFiles', async (req, res) => {
     // const { file, filename } = req.body
 
     try {
