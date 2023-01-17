@@ -8,11 +8,6 @@ app.post('/uploadFiles', async (req, res) => {
     // const { file, filename } = req.body
 
     try {
-        /* EXAMPLE data from request */
-        let sampleData = {
-            file: 'this is the uploaded file',
-            filename: 'randomfile.txt'
-        }
 
         async function addFile(data) {
 
@@ -23,7 +18,7 @@ app.post('/uploadFiles', async (req, res) => {
 
         }
 
-        const result = await addFile(req.body || sampleData)
+        const result = await addFile(req.body)
 
         console.log(result)
 
@@ -39,7 +34,6 @@ app.get('/getFiles/:cid', async (req, res) => {
     const cid = req.params.cid
 
     try {
-        /* EXAMPLE */
         const content = await ipfs.cat(cid)
 
         let result = Buffer.alloc(0)
@@ -48,9 +42,9 @@ app.get('/getFiles/:cid', async (req, res) => {
             result = Buffer.concat([result, Buffer.from(chunk)])
         }
 
-        console.log(result.toString())
+        console.log(result.toString('base64'))
 
-        res.send(result.toString())
+        res.send(result.toString('base64'))
     }
     catch (error) {
         res.send(error)
