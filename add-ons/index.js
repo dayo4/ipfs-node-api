@@ -1,16 +1,22 @@
 // Initialize App with primary plugins
-import express from 'express'
-import cors from 'cors'
+const express = require('express')
+const cors = require('cors')
 const app = express()
-app.use(cors())
+
+app.use(cors(/* {
+    origin:
+    process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000", "https://node.fulaso.io"]
+    : "",
+} */))
+app.use(express.static('public'))
 
 //Import Internal Plugins
-import ipfs from './ipfs.js'
+
 
 // Add other plugins
 
 
-export {
-    app,
-    ipfs,
+module.exports = {
+    app
 }

@@ -1,4 +1,20 @@
-import { app, ipfs } from '../add-ons/index.js'
+const { app } = require('../add-ons')
+const fs = require('fs-extra')
+const path = require('path');
+
+const projectId = process.env.PROJECT_ID;
+const projectSecret = process.env.PROJECT_SECRET;
+const auth =
+    'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
+const clientConfig = {
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+}
+
 
 app.get('/', async (req, res) => {
     res.send('WELCOME TO FULAZO - NODE')
@@ -7,48 +23,59 @@ app.get('/', async (req, res) => {
 app.post('/uploadFiles', async (req, res) => {
     // const { file, filename } = req.body
 
-    try {
+    import('ipfs-http-client')
+        .then(async client => {
+            const ipfs = client.create(clientConfig)
 
-        async function addFile(data) {
-
-            return await ipfs.add({
-                path: data.filename,
-                content: data.file
+            const result = await ipfs.add({
+                path: req.body.filename,
+                content: req.body.file
             })
 
-        }
+            const cid = result.cid.toString()
 
-        const result = await addFile(req.body)
+            const json_path = path.join(__dirname, '../public/bcjson.json')
+            const bcjson = await fs.readJSON(json_path)
+            const exists = bcjson.find(obj => {
+                return obj.cid === cid
+            })
 
-        console.log(result)
+            if (!exists) {
+                bcjson.push({
+                    filename: 'file.txt',
+                    cid: cid
+                })
+            }
 
-        res.send(result.cid.toString())
-    }
-    catch (error) {
-        res.send(error)
-    }
+            await fs.writeJSON(json_path, bcjson)
+
+            res.send(cid)
+
+        }).catch(error => {
+            res.send(error)
+        })
 
 })
 
 app.get('/getFiles/:cid', async (req, res) => {
     const cid = req.params.cid
+    import('ipfs-http-client')
+        .then(async client => {
+            const ipfs = client.create(clientConfig)
 
-    try {
-        const content = await ipfs.cat(cid)
+            const content = await ipfs.cat(cid)
 
-        let result = Buffer.alloc(0)
+            let result = Buffer.alloc(0)
 
-        for await (const chunk of content) {
-            result = Buffer.concat([result, Buffer.from(chunk)])
-        }
+            for await (const chunk of content) {
+                result = Buffer.concat([result, Buffer.from(chunk)])
+            }
 
-        console.log(result.toString('base64'))
+            res.send(result.toString('base64'))
 
-        res.send(result.toString('base64'))
-    }
-    catch (error) {
-        res.send(error)
-    }
+        }).catch(error => {
+            res.send(error)
+        })
 })
 
 /* For 404 redirect */

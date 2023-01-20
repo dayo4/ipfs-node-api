@@ -4,18 +4,18 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config server.js",
-    "start": "pm2 start -r dotenv/config server.js",
-    "restart": "pm2 restart -r dotenv/config server.js",
-    "stop": "pm2 stop server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "dotenv": "^16.0.3",
+    "cors": "^2.8.5",
+    "ethereumjs-tx": "^2.1.2",
     "express": "^4.18.2",
-    "ipfs-http-client": "^60.0.0"
+    "fs-extra": "^11.1.0",
+    "ipfs-http-client": "^60.0.0",
+    "web3": "^1.8.1"
   },
   "devDependencies": {
-    "cors": "^2.8.5"
-  },
-  "type": "module"
+    "dotenv": "^16.0.3"
+  }
 }
