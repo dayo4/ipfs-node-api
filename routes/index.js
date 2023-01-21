@@ -71,7 +71,7 @@ app.get('/getFiles/:cid', async (req, res) => {
             result = Buffer.concat([result, Buffer.from(chunk)])
         }
 
-        res.send(result.toString('base64'))
+        res.send(result.toString())
 
     } catch (error) {
         res.send(error)
