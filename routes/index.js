@@ -2,6 +2,7 @@ const { app } = require('../add-ons')
 const client = require('ipfs-http-client')
 const fs = require('fs-extra')
 const path = require('path');
+const json_path = path.join(__dirname, '../public/bcjson.json')
 
 const projectId = process.env.PROJECT_ID;
 const projectSecret = process.env.PROJECT_SECRET;
@@ -22,7 +23,7 @@ app.get('/', async (req, res) => {
 })
 
 app.post('/uploadFiles', async (req, res) => {
-    // const { file, filename } = req.body
+    // const { file, filename, filetype } = req.body
 
     try {
         const ipfs = client.create(clientConfig)
@@ -34,15 +35,15 @@ app.post('/uploadFiles', async (req, res) => {
 
         const cid = result.cid.toString()
 
-        const json_path = path.join(__dirname, '../public/bcjson.json')
         const bcjson = await fs.readJSON(json_path)
         const exists = bcjson.find(obj => {
             return obj.cid === cid
-        })
+        })  
 
         if (!exists) {
             bcjson.push({
                 filename: req.body.filename,
+                filetype: req.body.filetype,
                 cid: cid
             })
         }
@@ -71,7 +72,24 @@ app.get('/getFiles/:cid', async (req, res) => {
             result = Buffer.concat([result, Buffer.from(chunk)])
         }
 
-        res.send(result.toString())
+        const bcjson = await fs.readJSON(json_path)
+        const index = bcjson.findIndex(obj => {
+            return obj.cid === cid
+        })
+
+        let object = {
+            filename: '',
+            filetype: ''
+        }
+        if (index >= 0) {
+            object = bcjson[index]
+        }
+
+        res.send({
+            file: result.toString(),
+            filename: object.filename,
+            filetype: object.filetype
+        })
 
     } catch (error) {
         res.send(error)
