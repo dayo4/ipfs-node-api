@@ -1,2 +1,2 @@
-# fulaso-node
-Repo for FULASO node backend
+## Node.js Backend API for InterPlanetary File System(IPFS) files storates.
+
